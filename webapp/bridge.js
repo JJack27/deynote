@@ -113,6 +113,7 @@ const Heynote = {
     },
 
     setSettings(settings) {
+        console.log(settings)
         localStorage.setItem("settings", JSON.stringify(settings))
         ipcRenderer.send(SETTINGS_CHANGE_EVENT, settings)
     },

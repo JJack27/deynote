@@ -9,6 +9,8 @@
     const defaultFontSize = window.heynote.defaultFontSize
     const defaultDefaultBlockLanguage = "text"
     const defaultDefaultBlockLanguageAutoDetect = true
+    const defaultNumberOfWorkspace = 1;
+    const maxWorkspaces = 3;
     
     export default {
         props: {
@@ -53,7 +55,7 @@
                 }),
                 defaultBlockLanguage: this.initialSettings.defaultBlockLanguage || defaultDefaultBlockLanguage,
                 defaultBlockLanguageAutoDetect: this.initialSettings.defaultBlockLanguageAutoDetect === false ? false : defaultDefaultBlockLanguageAutoDetect,
-
+                numWorkspaces: this.initialSettings.numWorkspaces || defaultNumberOfWorkspace,
                 activeTab: "general",
                 isWebApp: window.heynote.platform.isWebApp,
                 customBufferLocation: !!this.initialSettings.bufferPath,
@@ -87,6 +89,7 @@
             },
 
             updateSettings() {
+                console.log(this.numWorkspaces)
                 window.heynote.setSettings({
                     showLineNumberGutter: this.showLineNumberGutter,
                     showFoldGutter: this.showFoldGutter,
@@ -101,6 +104,7 @@
                     autoUpdate: this.autoUpdate,
                     bracketClosing: this.bracketClosing,
                     bufferPath: this.bufferPath,
+                    numWorkspaces: parseInt(this.numWorkspaces),
                     fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
                     fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
                     defaultBlockLanguage: this.defaultBlockLanguage === "text" ? undefined : this.defaultBlockLanguage,
@@ -124,6 +128,14 @@
                     this.bufferPath = ""
                     this.updateSettings()
                 }
+            },
+            onNumWorkspacesChange() {
+                if (this.numWorkspaces < 1) {
+                    this.numWorkspaces = 1
+                } else if (this.numWorkspaces > maxWorkspaces) {
+                    this.numWorkspaces = maxWorkspaces
+                }
+                this.updateSettings()
             },
         }
     }
@@ -253,6 +265,16 @@
                                     >Select Directory</button>
                                     <span class="path" v-show="customBufferLocation && bufferPath">{{ bufferPath }}</span>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row" v-if="!isWebApp">
+                            <div class="entry buffer-location">
+                                <h2>Workspaces (at most 3) </h2>
+                                <input
+                                    type="text"
+                                    v-model="numWorkspaces"
+                                    @change="onNumWorkspacesChange"
+                                />
                             </div>
                         </div>
                     </TabContent>
